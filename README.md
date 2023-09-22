@@ -1,0 +1,2 @@
+# visiprompt
+simple zsh prompt
