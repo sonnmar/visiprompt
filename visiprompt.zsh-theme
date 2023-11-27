@@ -63,11 +63,27 @@ prs_git () {
 # User- and Hostname if not equal to logon names
 function prs_adr() {
     local str=""
-    if [[ "$USER" != "$LOGNAME" || -n "$SSH_CONNECTION" ]]; then
+    if [[ "$USER" != "$LOGNAME" || -v "SSH_CONNECTION" ]]; then
         str="$USER"
     fi
-    if [[ -n "$SSH_CONNECTION" ]]; then
-        str+="@$(hostname | cut -d'.' -f1)"
+    if [[ -v "SSH_CONNECTION" ]]; then
+        str+="@${$(hostname)%%.*}"
+    fi
+    echo "$str"
+}
+
+
+# Virtual Environment in Python
+function prs_venv() {
+    local str=""
+    local line=""
+    if [[ -v "VIRTUAL_ENV" ]]; then
+        line=$(grep 'prompt' "$VIRTUAL_ENV/pyvenv.cfg")
+        if [[ -n $line ]]; then
+            str="[${line[11,-2]}]"
+        else
+            str="[${VIRTUAL_ENV##*/}]"
+        fi
     fi
     echo "$str"
 }
@@ -105,6 +121,9 @@ function zle-line-init zle-keymap-select () {
 
     # on the right side: git-information
     RPROMPT="\$(prs_git)"
+
+    # Python virtuel environment
+    RPROMPT+="%F{blue}\$(prs_venv)%f"
 
     # infos about backgground jobs
     RPROMPT+="%(1j.%F{magenta}[%j]%f.)"
