@@ -67,7 +67,7 @@ function prs_adr() {
         str="$USER"
     fi
     if [[ -v "SSH_CONNECTION" ]]; then
-        str+="@${$(hostname)%%.*}"
+        str+="@${$(uname -n)%%.*}"
     fi
     echo "$str"
 }
@@ -78,7 +78,7 @@ function prs_venv() {
     local str=""
     local line=""
     if [[ -v "VIRTUAL_ENV" ]]; then
-        line=$(grep 'prompt' "$VIRTUAL_ENV/pyvenv.cfg")
+        line=$(grep '^prompt' "$VIRTUAL_ENV/pyvenv.cfg")
         if [[ -n $line ]]; then
             str="[${line[11,-2]}]"
         else
